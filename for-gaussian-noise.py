@@ -1,0 +1,11 @@
+import cv2
+img = cv2.imread("IMG_20220615_145150.jpg",0)
+img = cv2.GaussianBlur(img,(5, 5),0)
+cv2.imwrite("GaussianBlur.jpg",img)
+#img = cv2.equalizeHist(img)
+thresh3 = cv2.adaptiveThreshold(img,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY,101,2)
+cv2.imwrite("thresh.jpg",thresh3)
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+binary = cv2.morphologyEx(thresh3, cv2.MORPH_CLOSE, kernel)
+binary = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel)
+cv2.imwrite("out.jpg",binary)
