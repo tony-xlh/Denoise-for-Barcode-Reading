@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  
+  <button onclick="decodeWithDefaultRuntimeSettings()">Decode with default runtime settings</button>
+  <button onclick="decodeWithSmooth()">Decode with smoothing</button>
+  <div id="result"></div>
+  <img id="patterned" src="Special_0265.jpg" style="max-width:480px;max-height:480px;"/>
+  <img id="preprocessedImage" style="max-width:480px;max-height:480px;"/>
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.8.3/dist/dbr.js"></script>
+  <script>
+    Dynamsoft.DBR.BarcodeReader.license = 't0068MgAAABxwDV/+0AIdt1iiyx5OMxq+DgYIr7ic05pKP54jZ7ueOpVUK0/DF8FVr6oeR7EHvHrDtGBus3WVOseDyufDLq4=';
+    let reader;
+    init();
+    
+    async function init(){
+      reader = await Dynamsoft.DBR.BarcodeReader.createInstance();
+    }
+    
+    async function decodeWithDefaultRuntimeSettings(){
+      let resultContainer = document.getElementById("result");
+      resultContainer.innerText = "Decoding...";
+      
+      await reader.resetRuntimeSettings();
+      
+      
+      let settings = await reader.getRuntimeSettings();
+      settings.intermediateResultTypes = Dynamsoft.DBR.EnumIntermediateResultType.IRT_PREPROCESSED_IMAGE;
+      await reader.updateRuntimeSettings(settings);
+      
+      let imageSource = document.getElementById("patterned");
+      let results = await reader.decode(imageSource);
+      
+      if (results.length>0) {
+        resultContainer.innerText = results[0].barcodeText;
+      }else{
+        resultContainer.innerText = "Not found";
+      }
+      displayPreprocessedImage();
+    }
+    
+    async function decodeWithSmooth(){
+      let resultContainer = document.getElementById("result");
+      resultContainer.innerText = "Decoding...";
+      
+      let settings = await reader.getRuntimeSettings();
+      settings.furtherModes.imagePreprocessingModes = [Dynamsoft.DBR.EnumImagePreprocessingMode.IPM_GRAY_SMOOTH, 0, 0, 0, 0, 0, 0, 0];
+      settings.intermediateResultTypes = Dynamsoft.DBR.EnumIntermediateResultType.IRT_PREPROCESSED_IMAGE;
+      await reader.updateRuntimeSettings(settings);
+      reader.setModeArgument("ImagePreprocessingModes",0,"SmoothBlockSizeX","7");
+      reader.setModeArgument("ImagePreprocessingModes",0,"SmoothBlockSizeY","7");
+      
+      let imageSource = document.getElementById("patterned");
+      let results = await reader.decode(imageSource);
+      if (results.length>0) {
+        resultContainer.innerText = results[0].barcodeText;
+      }else{
+        resultContainer.innerText = "Not found";
+      }
+      displayPreprocessedImage();
+    }
+    
+     async function displayPreprocessedImage(){
+      let intermediateResults = await reader.getIntermediateResults();
+      let cvsArray = await reader.getIntermediateCanvas();
+      let cvs = cvsArray[0];
+      let preprocessedImage = document.getElementById("preprocessedImage");
+      preprocessedImage.src = cvs.toDataURL();
+    }
+  </script>
+</body>
+
+</html>

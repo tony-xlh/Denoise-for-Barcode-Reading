@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+  <button onclick="decodeWithNormalThreshold()">Decode with normal threshold</button>
+  <button onclick="decodeWithAdaptiveThreshold()">Decode with adaptive threshold</button>
+  <div id="result"></div>
+  <img id="imageSource" src="IMG_20220615_145150.jpg" style="max-width:480px;max-height:480px;"/>
+  <img id="binarizedImage" style="max-width:480px;max-height:480px;"/>
+
+  <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.8.3/dist/dbr.js"></script>
+  <script>
+    Dynamsoft.DBR.BarcodeReader.license = 't0068MgAAABxwDV/+0AIdt1iiyx5OMxq+DgYIr7ic05pKP54jZ7ueOpVUK0/DF8FVr6oeR7EHvHrDtGBus3WVOseDyufDLq4=';
+    let reader;
+    init();
+    
+    async function init(){
+      reader = await Dynamsoft.DBR.BarcodeReader.createInstance();
+    }
+    
+    async function decodeWithNormalThreshold(){
+      let resultContainer = document.getElementById("result");
+      resultContainer.innerText = "Decoding...";
+      
+      await reader.resetRuntimeSettings();
+      let settings = await reader.getRuntimeSettings();
+      settings.binarizationModes[0] = Dynamsoft.DBR.EnumBinarizationMode.BM_THRESHOLD;
+      settings.intermediateResultTypes = Dynamsoft.DBR.EnumIntermediateResultType.IRT_BINARIZED_IMAGE;
+      await reader.updateRuntimeSettings(settings);
+      console.log(settings);
+      reader.setModeArgument("BinarizationModes",0,"BinarizationThreshold","-1");
+      reader.setModeArgument("BinarizationModes",0,"ImagePreprocessingModesIndex","-1");
+      
+      let imageSource = document.getElementById("imageSource");
+      let results = await reader.decode(imageSource);
+      if (results.length>0) {
+        resultContainer.innerText = results[0].barcodeText;
+      }else{
+        resultContainer.innerText = "Not found";
+      }
+      displayBinarizedImage();
+    }
+    
+    async function displayBinarizedImage(){
+      let intermediateResults = await reader.getIntermediateResults();
+      console.log(intermediateResults);
+      let cvsArray = await reader.getIntermediateCanvas();
+      let cvs = cvsArray[0];
+      let binarizedImage = document.getElementById("binarizedImage");
+      binarizedImage.src = cvs.toDataURL();
+    }
+    
+    async function decodeWithAdaptiveThreshold(){
+      let resultContainer = document.getElementById("result");
+      resultContainer.innerText = "Decoding...";
+      await reader.resetRuntimeSettings();
+      let settings = await reader.getRuntimeSettings();
+      settings.binarizationModes[0] = Dynamsoft.DBR.EnumBinarizationMode.BM_LOCAL_BLOCK;
+      settings.intermediateResultTypes = Dynamsoft.DBR.EnumIntermediateResultType.IRT_BINARIZED_IMAGE;
+      await reader.updateRuntimeSettings(settings);
+      console.log(settings);
+      reader.setModeArgument("BinarizationModes",0,"BlockSizeX","0");
+      reader.setModeArgument("BinarizationModes",0,"BlockSizeY","0");
+      let imageSource = document.getElementById("imageSource");
+      let results = await reader.decode(imageSource);
+      if (results.length>0) {
+        resultContainer.innerText = results[0].barcodeText;
+      }else{
+        resultContainer.innerText = "Not found";
+      }
+      displayBinarizedImage();
+    }
+  </script>
+</body>
+
+</html>
