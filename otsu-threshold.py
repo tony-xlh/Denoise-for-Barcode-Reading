@@ -1,5 +1,5 @@
 import cv2
-image = cv2.imread('texture-image-sample.png')
+image = cv2.imread('IMG_20220615_145150.jpg')
 image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 #image = cv2.GaussianBlur(image,(5, 5),0)
 
