@@ -5,7 +5,7 @@
   <button onclick="decodeWithNormalThreshold()">Decode with normal threshold</button>
   <button onclick="decodeWithAdaptiveThreshold()">Decode with adaptive threshold</button>
   <div id="result"></div>
-  <img id="imageSource" src="IMG_20220615_145150.jpg" style="max-width:480px;max-height:480px;"/>
+  <img id="imageSource" src="texture-image-sample.png" style="max-width:480px;max-height:480px;"/>
   <img id="binarizedImage" style="max-width:480px;max-height:480px;"/>
 
   <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@8.8.3/dist/dbr.js"></script>
@@ -57,8 +57,10 @@
       let settings = await reader.getRuntimeSettings();
       settings.binarizationModes[0] = Dynamsoft.DBR.EnumBinarizationMode.BM_LOCAL_BLOCK;
       settings.intermediateResultTypes = Dynamsoft.DBR.EnumIntermediateResultType.IRT_BINARIZED_IMAGE;
+      settings.furtherModes.textureDetectionModes[0] = 1;
       await reader.updateRuntimeSettings(settings);
       console.log(settings);
+      //reader.setModeArgument("TextureDetectionModes",0,"Sensitivity","8");
       reader.setModeArgument("BinarizationModes",0,"BlockSizeX","0");
       reader.setModeArgument("BinarizationModes",0,"BlockSizeY","0");
       let imageSource = document.getElementById("imageSource");
