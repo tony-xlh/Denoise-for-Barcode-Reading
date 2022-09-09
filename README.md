@@ -9,6 +9,6 @@ Methods:
 2. Binarization.
 
 
-[Live demo](https://blog.xulihang.me/Denoise-for-Barcode-Reading/).
+[Live demo](http://tony-xlh.github.io/Denoise-for-Barcode-Reading/).
 
 The demo will give the image result after image processing.
